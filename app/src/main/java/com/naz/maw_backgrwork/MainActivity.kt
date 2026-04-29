@@ -1,5 +1,8 @@
 package com.naz.maw_backgrwork
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,10 +20,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.naz.maw_backgrwork.alarm.SampleAlarm
 import com.naz.maw_backgrwork.service.SampleForegroundService
 import com.naz.maw_backgrwork.service.SampleIntentService
 import com.naz.maw_backgrwork.service.SampleService
 import com.naz.maw_backgrwork.ui.theme.MAW_BackgrWorkTheme
+import java.util.Calendar
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +62,27 @@ class MainActivity : ComponentActivity() {
                             Spacer(modifier = Modifier.padding(16.dp))
 
                             RegularButton(text = "Start Alarm Manager") {
-
+                                val calendar = Calendar.getInstance()
+                                calendar.add(Calendar.SECOND, 10)
+                                val intent = Intent(applicationContext, SampleAlarm::class.java)
+                                val pendingIntent = PendingIntent.getBroadcast(
+                                    applicationContext,
+                                    0,
+                                    intent,
+                                    PendingIntent.FLAG_IMMUTABLE
+                                )
+                                val alarmManager = getSystemService(ALARM_SERVICE) as? AlarmManager
+                                alarmManager?.let {
+                                    try {
+                                        it.setExact(
+                                            AlarmManager.RTC_WAKEUP,
+                                            calendar.timeInMillis,
+                                            pendingIntent
+                                        )
+                                    } catch (e: SecurityException) {
+                                        e.printStackTrace()
+                                    }
+                                }
                             }
                             Spacer(modifier = Modifier.padding(16.dp))
 
