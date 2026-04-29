@@ -2,7 +2,9 @@ package com.naz.maw_backgrwork
 
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.Context
+import android.app.job.JobInfo
+import android.content.ComponentName
+import android.app.job.JobScheduler
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -20,12 +22,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.naz.maw_backgrwork.alarm.SampleAlarm
+import com.naz.maw_backgrwork.job.SampleJobService
 import com.naz.maw_backgrwork.service.SampleForegroundService
 import com.naz.maw_backgrwork.service.SampleIntentService
 import com.naz.maw_backgrwork.service.SampleService
 import com.naz.maw_backgrwork.ui.theme.MAW_BackgrWorkTheme
+import com.naz.maw_backgrwork.workmanager.SampleWorkManager
 import java.util.Calendar
+import android.util.Log
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,12 +96,39 @@ class MainActivity : ComponentActivity() {
                             Spacer(modifier = Modifier.padding(16.dp))
 
                             RegularButton(text = "Start Work Manager") {
+                                val constraints = Constraints.Builder()
+                                    .setRequiresCharging(false)
+                                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                                    .setRequiresBatteryNotLow(true)
+                                    .build()
 
+                                val worker = OneTimeWorkRequest.Builder(SampleWorkManager::class.java)
+                                    .setConstraints(constraints)
+                                    .build()
+
+                                WorkManager.getInstance(applicationContext).enqueue(worker)
                             }
                             Spacer(modifier = Modifier.padding(16.dp))
 
                             RegularButton(text = "Start Job Scheduler") {
+                                val componentName =
+                                    ComponentName(applicationContext, SampleJobService::class.java)
+                                val jobInfo = JobInfo.Builder(1, componentName)
+                                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                                    .setPersisted(true)
+                                    .setPeriodic((15 * 60 * 1000).toLong())
+                                    .build()
 
+                                val jobScheduler =
+                                    getSystemService(JOB_SCHEDULER_SERVICE) as? JobScheduler
+                                jobScheduler?.let {
+                                    val result = jobScheduler.schedule(jobInfo)
+                                    if (result == JobScheduler.RESULT_SUCCESS) {
+                                        Log.d("TAG", "Job scheduled successfully")
+                                    } else {
+                                        Log.d("TAG", "Job scheduling failed")
+                                    }
+                                }
                             }
                             Spacer(modifier = Modifier.padding(16.dp))
                         }
