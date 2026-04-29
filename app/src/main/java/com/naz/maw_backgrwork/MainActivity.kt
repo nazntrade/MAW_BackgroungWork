@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.naz.maw_backgrwork.service.SampleForegroundService
+import com.naz.maw_backgrwork.service.SampleIntentService
 import com.naz.maw_backgrwork.service.SampleService
 import com.naz.maw_backgrwork.ui.theme.MAW_BackgrWorkTheme
 
@@ -50,7 +51,8 @@ class MainActivity : ComponentActivity() {
                             Spacer(modifier = Modifier.padding(16.dp))
 
                             RegularButton(text = "Start Intent Service") {
-
+                                val intent = Intent(applicationContext, SampleIntentService::class.java)
+                                startService(intent)
                             }
                             Spacer(modifier = Modifier.padding(16.dp))
 

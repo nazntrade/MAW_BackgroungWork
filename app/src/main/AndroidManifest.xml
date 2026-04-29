@@ -28,9 +28,14 @@
 
         <service
             android:name=".service.SampleService" />
+
         <service
             android:name=".service.SampleForegroundService"
             android:foregroundServiceType="shortService"/>
+
+        <service
+            android:name=".service.SampleIntentService"
+            android:exported="false"/>
 
     </application>
 
