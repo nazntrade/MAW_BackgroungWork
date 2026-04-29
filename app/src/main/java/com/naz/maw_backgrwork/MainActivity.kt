@@ -1,5 +1,6 @@
 package com.naz.maw_backgrwork
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.naz.maw_backgrwork.service.SampleForegroundService
+import com.naz.maw_backgrwork.service.SampleService
 import com.naz.maw_backgrwork.ui.theme.MAW_BackgrWorkTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,12 +38,14 @@ class MainActivity : ComponentActivity() {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             RegularButton(text = "Start Regular service") {
-
+                                val intent = Intent(applicationContext, SampleService::class.java)
+                                startService(intent)
                             }
                             Spacer(modifier = Modifier.padding(16.dp))
 
                             RegularButton(text = "Start Foreground Service") {
-
+                                val intent = Intent(applicationContext, SampleForegroundService::class.java)
+                                startService(intent)
                             }
                             Spacer(modifier = Modifier.padding(16.dp))
 
